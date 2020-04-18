@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>HW4 - Percoski,Eric</title>
+    <title>Currency Exchanger-Percoski, Eric</title>
 
     <style>
         div{
@@ -25,7 +25,7 @@
             background-color: #dddddd;
         }
     </style>
-        <h2 style="float: left; padding-left: 40%">Countries API</h2>
+        <h2 style="float: left; padding-left: 40%">Exchange Rate API</h2>
 
 </head>
 <div>
@@ -33,12 +33,8 @@
 <body>
     <div>
 <form method ="post" action="/push">
-        <textarea rows="5" cols="10" name="name">${name}</textarea>
-        <textarea rows="5" cols="10" name="capital">${capital}</textarea>
-        <textarea rows="5" cols="10" name="region">${region}</textarea>
-        <textarea rows="5" cols="10" name="subregion">${subregion}</textarea>
-        <textarea rows="5" cols="10" name="population">${population}</textarea>
-
+        <textarea rows="5" cols="10" name="price">${price}</textarea>
+        <textarea rows="5" cols="10" name="timestamp">${timestamp}</textarea>
     <button type="submit" style="height: 35px; width: 100px;">SUBMIT AND LOAD DB</button>
 </form>
     </div>
@@ -46,28 +42,16 @@
     </div>
 <table>
     <tr>
-        <th>Country Name</th>
-        <th>Capital</th>
-        <th>Region</th>
-        <th>Sub-Region</th>
-        <th>Population</th>
-        <th>Actions</th>
-
+        <th>Ask Price</th>
+        <th>Timestamp</th>
 
     </tr>
     <c:forEach var="itemList" items="${itemList}">
         <tr>
-            <td>${itemList.name}</td>
-            <td>${itemList.capital}</td>
-            <td>${itemList.region}</td>
-            <td>${itemList.subregion}</td>
-            <td>${itemList.population}</td>
-            <td>
-                <a href="/delete/${itemList.id}">DELETE</a>
-            </td>
+            <td>${itemList.price}</td>
+            <td>${itemList.timestamp}</td>
 
 
-            <td></td>
         </tr>
     </c:forEach>
 </table>

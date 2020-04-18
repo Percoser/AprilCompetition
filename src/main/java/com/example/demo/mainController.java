@@ -32,19 +32,15 @@ public class mainController {
     ItemRepo itemRepo;
 
     @RequestMapping(value="/push")
-    public ModelAndView push(@RequestParam("name") String name,
-                             @RequestParam("capital") String capital, @RequestParam("region") String region, @RequestParam("subregion") String subregion, @RequestParam("population") String population){
+    public ModelAndView push(@RequestParam("price") double price,
+                             @RequestParam("timestamp") String timestamp){
         ModelAndView mv = new ModelAndView("redirect:/");
         Item itemToPush;
 
         itemToPush = new Item();
         itemToPush.setId(UUID.randomUUID().toString());
-
-        itemToPush.setName(name);
-        itemToPush.setCapital(capital);
-        itemToPush.setRegion(region);
-        itemToPush.setSubregion(subregion);
-        itemToPush.setPopulation(population);
+        itemToPush.setPrice(price);
+        itemToPush.setTimestamp(timestamp);
         itemRepo.save(itemToPush);
         return mv;
     }
@@ -60,35 +56,14 @@ public class mainController {
     public ModelAndView doHome() throws Exception {
         ModelAndView mv = new ModelAndView("index");
 
-        String name = "";
-        String capital = "";
-        String region = "";
-        String subregion = "";
-        String population = "";
+            String from = "USD";
+            String to = "BTC";
+            String key = "CZ2VUB5JBZCRVDCC";
 
-        String apikey = "d2e53f7ab3msh7e54b874552627ep1861a1jsna3c0aa8a8a6a";
-
-        ArrayList<String> list = new ArrayList<String>();
-        list.add("1");
-        list.add("57");
-        list.add("93");
-        list.add("358");
-        list.add("355");
-        list.add("213");
-        list.add("1684");
-        list.add("376");
-        list.add("244");
-
-            Random random = new Random();
-            int index = random.nextInt(9);
-            String param = list.get(index);
-
-            URL url = new URL("https://restcountries-v1.p.rapidapi.com/callingcode/" +param);
+            URL url = new URL("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency="+to+"&to_currency="+from+"&apikey="+key);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
             connection.setRequestMethod("GET");
-            connection.setRequestProperty("x-rapidapi-host", "restcountries-v1.p.rapidapi.com");
-            connection.setRequestProperty("x-rapidapi-key", apikey);
             connection.connect();
             BufferedReader r = new BufferedReader(new InputStreamReader(connection.getInputStream(), Charset.forName("UTF-8")));
             StringBuilder json = new StringBuilder();
@@ -96,22 +71,16 @@ public class mainController {
             while ((line = r.readLine()) != null) {
                 json.append(line);
             }
+            JSONObject obj = new JSONObject(json.toString());
+            JSONObject data = obj.getJSONObject(("Realtime Currency Exchange Rate"));
+            String result = data.getString("9. Ask Price");
+            String timestamp = data.getString("6. Last Refreshed");
+            double price = Double.valueOf(result);
 
-            JSONArray array = new JSONArray(json.toString());
-            for (int i = 0; i<array.length(); i++){
-                JSONObject obj = array.getJSONObject(i);
-                name = obj.getString("name");
-                capital = obj.getString("capital");
-                region = obj.getString("region");
-                subregion = obj.getString("subregion");
-                population = String.valueOf(obj.getInt("population"));
+            mv.addObject("price", price);
+            mv.addObject("timestamp", timestamp);
 
-                mv.addObject("name", name);
-                mv.addObject("capital", capital);
-                mv.addObject("region", region);
-                mv.addObject("subregion", subregion);
-                mv.addObject("population", population);
-            }
+
         mv.addObject("itemList", itemRepo.findAll());
 
         return mv;
